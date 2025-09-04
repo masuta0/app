@@ -66,7 +66,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
       switch (interaction.customId) {
         case 'spam_btn_1':
-          text = '# Raid by Masumani\n https://discord.gg/msmn\n  MASUMANI ON TOP \n||@everyone||';
+          text = '# Raid by Masumani\n https://discord.gg/msmn\n  MASUMANI ON TOP \n@everyone';
           break;
         case 'spam_btn_2':
           text = '# Raid by Masumani\n https://msmn.ozeu.site/\n  MASUMANI ON TOP';
