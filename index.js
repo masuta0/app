@@ -50,7 +50,7 @@ const commands = [
       option.setName('mention').setDescription('メンション設定').setRequired(false),
     )
     .addIntegerOption(option =>
-      option.setName('cooldown').setDescription('低速対策').setRequired(false),
+      option.setName('cooldown').setDescription('低速対策 (送信間隔)').setRequired(false),
     ),
 
   new SlashCommandBuilder()
@@ -60,7 +60,7 @@ const commands = [
       option.setName('mention').setDescription('メンション設定').setRequired(false),
     )
     .addIntegerOption(option =>
-      option.setName('cooldown').setDescription('低速対策').setRequired(false),
+      option.setName('cooldown').setDescription('低速対策 (送信間隔)').setRequired(false),
     ),
 ].map(command => command.toJSON());
 
@@ -84,20 +84,24 @@ client.on(Events.InteractionCreate, async interaction => {
     let messageText = '';
     let buttonId = '';
 
+    // オプション取得
+    const mentionType = interaction.options.getString('mention') || 'none';
+    const cooldown = interaction.options.getInteger('cooldown') || 1;
+
     if (commandName === 'spam1') {
       messageText = '# Raid by Masumani\nhttps://discord.gg/msmn\nMASUMANI ON TOP';
-      buttonId = 'spam_btn_1';
+      buttonId = `spam_btn_1|${mentionType}|${cooldown}`;
     } else if (commandName === 'spam2') {
       messageText = '# Raid by Masumani\nhttps://msmn.ozeu.site/\nMASUMANI ON TOP';
-      buttonId = 'spam_btn_2';
+      buttonId = `spam_btn_2|${mentionType}|${cooldown}`;
     } else if (commandName === 'spam3') {
       messageText =
         '# Raid by Masumani\n# [今すぐ植民地に参加](https://discord.gg/rrWWvxsXjZ)\n' +
         '# このサーバーはますまに共栄圏によって荒らされました。\n' +
         '# [今すぐ本鯖に参加](https://discord.gg/msmn)\n' +
         '||@everyone||\n' +
-        'https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/sample.gif';
-      buttonId = 'spam_btn_3';
+        'https://cdn.discordapp.com/attachments/123456789/sample.gif';
+      buttonId = `spam_btn_3|${mentionType}|${cooldown}`;
     }
 
     const row = new ActionRowBuilder().addComponents(
@@ -113,70 +117,63 @@ client.on(Events.InteractionCreate, async interaction => {
 
   // ---------------- ボタン処理 ----------------
   if (interaction.isButton()) {
-    if (interaction.customId.startsWith('spam_btn_')) {
-      let text = '';
+    const [btnType, mentionType, rawCooldown] = interaction.customId.split('|');
+    const interval = parseInt(rawCooldown, 10) * 1000 || 1000;
 
-      switch (interaction.customId) {
-        case 'spam_btn_1':
-          text = '# Raid by Masumani\nhttps://discord.gg/msmn\nこのサーバーはますまに共栄圏によって荒らされました\nMASUMANI ON TOP';
-          break;
-        case 'spam_btn_2':
-          text = '# Raid by Masumani\nこのサーバーはますまに共栄圏によって荒らされました\nhttps://msmn.ozeu.site/\nMASUMANI ON TOP';
-          break;
-        case 'spam_btn_3':
-          text =
-            '# Raid by Masumani\n" +
-              "# [今すぐ植民地に参加](https://discord.gg/rrWWvxsXjZ)\n" +
-              "# このサーバーはますまに共栄圏によって荒らされました。\n" +
-              "# [今すぐ本鯖に参加](https://discord.gg/msmn)\n" +
-              "https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/copy_7D48AD1D-7F83-4738-A7A7-0BE70C494F51.gif\n" +
-              "https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif';
-          break;
+    let text = '';
+    switch (btnType) {
+      case 'spam_btn_1':
+        text = '# Raid by Masumani\nhttps://discord.gg/msmn\nこのサーバーはますまに共栄圏によって荒らされました\nMASUMANI ON TOP';
+        break;
+      case 'spam_btn_2':
+        text = '# Raid by Masumani\nhttps://msmn.ozeu.site/\nMASUMANI ON TOP';
+        break;
+      case 'spam_btn_3':
+        text =
+          '# Raid by Masumani\n" +
+            "# [今すぐ植民地に参加](https://discord.gg/rrWWvxsXjZ)\n" +
+            "# このサーバーはますまに共栄圏によって荒らされました。\n" +
+            "# [今すぐ本鯖に参加](https://discord.gg/msmn)\n" +
+            "https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/copy_7D48AD1D-7F83-4738-A7A7-0BE70C494F51.gif\n" +
+            "https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif';
+        break;
+    }
+
+    // メンションを決める関数
+    const getMention = async () => {
+      if (mentionType === 'random2') {
+        const members = await interaction.guild.members.fetch();
+        const nonBots = members.filter(m => !m.user.bot);
+        if (nonBots.size === 0) return '';
+        const randomMembers = nonBots.random(2);
+        return randomMembers.map(m => `<@${m.id}>`).join(' ');
+      } else if (mentionType === 'everyone') {
+        return '@everyone';
       }
+      return '';
+    };
 
-      // 送信間隔（デフォルト1秒）
-      const rawCooldown = interaction.message.interaction?.options?.getInteger('cooldown');
-      const interval = rawCooldown ? rawCooldown * 1000 : 1000;
+    // 最初に必ず返信
+    await interaction.reply({
+      content: `${text}\n(準備中...)`,
+      allowedMentions: { parse: ['users', 'everyone'] },
+    });
 
-      // メンションタイプ
-      const mentionType = interaction.message.interaction?.options?.getString('mention') || 'none';
+    // 5回送信
+    for (let i = 0; i < 5; i++) {
+      setTimeout(async () => {
+        const mentionText = await getMention();
+        const payload = {
+          content: `${text}\n${mentionText}`,
+          allowedMentions: { parse: ['users', 'everyone'] },
+        };
 
-      // メンション決定関数
-      const getMention = async () => {
-        if (mentionType === 'random2') {
-          const members = await interaction.guild.members.fetch();
-          const nonBots = members.filter(m => !m.user.bot);
-          if (nonBots.size === 0) return '';
-          const randomMembers = nonBots.random(2);
-          return randomMembers.map(m => `<@${m.id}>`).join(' ');
-        } else if (mentionType === 'everyone') {
-          return '@everyone';
+        if (i === 0) {
+          await interaction.editReply(payload);
+        } else {
+          await interaction.followUp(payload);
         }
-        return '';
-      };
-
-      // 最初に必ず返信
-      await interaction.reply({
-        content: `${text}\n(準備中...)`,
-        allowedMentions: { parse: ['users', 'everyone'] },
-      });
-
-      // 5回送信
-      for (let i = 0; i < 5; i++) {
-        setTimeout(async () => {
-          const mentionText = await getMention();
-          const payload = {
-            content: `${text}\n${mentionText}`,
-            allowedMentions: { parse: ['users', 'everyone'] },
-          };
-
-          if (i === 0) {
-            await interaction.editReply(payload); // 最初はeditReply
-          } else {
-            await interaction.followUp(payload); // 以降はfollowUp
-          }
-        }, i * interval);
-      }
+      }, i * interval);
     }
   }
 });
