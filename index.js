@@ -31,7 +31,21 @@ const commands = [
           { name: 'ランダム', value: 'random2' },
           { name: '@everyone', value: 'everyone' },
         )
+    )
+    .addIntegerOption(option =>
+      option
+        .setName('cooldown')
+        .setDescription('低速対策')
+        .setRequired(true)
+        .addChoices(
+          { name: '5秒', value: 5 },
+          { name: '10秒', value: 10 },
+          { name: '15秒', value: 15 },
+          { name: '30秒', value: 30 },
+          { name: '60秒', value: 60 },
+        )
     ),
+
   new SlashCommandBuilder()
     .setName('spam2')
     .setDescription('招待リンク対策回避')
@@ -45,7 +59,21 @@ const commands = [
           { name: 'ランダム', value: 'random2' },
           { name: '@everyone', value: 'everyone' },
         )
+    )
+    .addIntegerOption(option =>
+      option
+        .setName('cooldown')
+        .setDescription('低速対策')
+        .setRequired(true)
+        .addChoices(
+          { name: '5秒', value: 5 },
+          { name: '10秒', value: 10 },
+          { name: '15秒', value: 15 },
+          { name: '30秒', value: 30 },
+          { name: '60秒', value: 60 },
+        )
     ),
+
   new SlashCommandBuilder()
     .setName('spam3')
     .setDescription('植民地,GIF付き')
@@ -59,9 +87,21 @@ const commands = [
           { name: 'ランダム', value: 'random2' },
           { name: '@everyone', value: 'everyone' },
         )
+    )
+    .addIntegerOption(option =>
+      option
+        .setName('cooldown')
+        .setDescription('低速対策')
+        .setRequired(true)
+        .addChoices(
+          { name: '5秒', value: 5 },
+          { name: '10秒', value: 10 },
+          { name: '15秒', value: 15 },
+          { name: '30秒', value: 30 },
+          { name: '60秒', value: 60 },
+        )
     ),
 ].map(command => command.toJSON());
-
 // ---------------- コマンド登録 ----------------
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 (async () => {
@@ -88,13 +128,13 @@ client.on(Events.InteractionCreate, async interaction => {
 
     if (commandName === 'spam1') {
       messageText = 'スパムメッセージ1';
-      buttonId = `spam_btn_1_${mentionType}`;
+      buttonId = `spam_btn_1_${mentionType}_${cooldown}`;
     } else if (commandName === 'spam2') {
       messageText = 'スパムメッセージ2';
-      buttonId = `spam_btn_2_${mentionType}`;
+      buttonId = `spam_btn_2_${mentionType}_${cooldown}`;
     } else if (commandName === 'spam3') {
       messageText = 'スパムメッセージ3';
-      buttonId = `spam_btn_3_${mentionType}`;
+      buttonId = `spam_btn_3_${mentionType}_${cooldown}`;
     }
 
     const row = new ActionRowBuilder().addComponents(
@@ -138,20 +178,26 @@ const getMention = async () => {
   return '';
 };
 
-// 5回送信（allowedMentions を追加）
-for (let i = 0; i < 5; i++) {
-  const mentionText = await getMention();
-  const payload = {
-    content: `${text}\n${mentionText}`,
-    ephemeral: false,
-    allowedMentions: { parse: ['users', 'everyone'] }, // ✅ メンションを有効化
-  };
+// クールタイム（コマンドオプションから取得した値を customId に含める設計）
+const cooldown = parseInt(parts[4] || '5'); // デフォルトは5秒
+const interval = (cooldown * 1000) + 100;   // +0.1秒ラグ
 
-  if (i === 0) {
-    await interaction.reply(payload);
-  } else {
-    await interaction.followUp(payload);
-  }
+// 5回送信（クールタイム付き）
+for (let i = 0; i < 5; i++) {
+  setTimeout(async () => {
+    const mentionText = await getMention();
+    const payload = {
+      content: `${text}\n${mentionText}`,
+      ephemeral: false,
+      allowedMentions: { parse: ['users', 'everyone'] }, // ✅ メンションを有効化
+    };
+
+    if (i === 0) {
+      await interaction.reply(payload);
+    } else {
+      await interaction.followUp(payload);
+    }
+  }, i * interval);
 }
 }
 }
