@@ -130,12 +130,12 @@ client.on(Events.InteractionCreate, async interaction => {
         break;
       case 'spam_btn_3':
         text =
-          '# Raid by Masumani\n" +
-            "# [今すぐ植民地に参加](https://discord.gg/rrWWvxsXjZ)\n" +
-            "# このサーバーはますまに共栄圏によって荒らされました。\n" +
-            "# [今すぐ本鯖に参加](https://discord.gg/msmn)\n" +
-            "https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/copy_7D48AD1D-7F83-4738-A7A7-0BE70C494F51.gif\n" +
-            "https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif';
+          '# Raid by Masumani\n +
+          '# [今すぐ植民地に参加](https://discord.gg/rrWWvxsXjZ)\n' +
+          '# このサーバーはますまに共栄圏によって荒らされました。\n' +
+          '# [今すぐ本鯖に参加](https://discord.gg/msmn)\n' +
+  'https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/copy_7D48AD1D-7F83-4738-A7A7-0BE70C494F51.gif\n' +
+            'https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif';
         break;
     }
 
