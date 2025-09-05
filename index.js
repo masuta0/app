@@ -22,7 +22,7 @@ const commands = [
       option
         .setName('mention')
         .setDescription('メンション設定')
-        .setRequired(true)
+        .setRequired(false)
         .addChoices(
           { name: 'なし', value: 'none' },
           { name: 'ランダム', value: 'random2' },
@@ -35,6 +35,8 @@ const commands = [
         .setDescription('低速対策')
         .setRequired(false)
         .addChoices(
+          { name: '最速 (0.2秒)', value: 0 }, // 特別扱いで 0 → 実際は0.2秒に変換
+          { name: '1秒', value: 1 },
           { name: '5秒', value: 5 },
           { name: '10秒', value: 10 },
           { name: '15秒', value: 15 },
@@ -50,25 +52,13 @@ const commands = [
       option
         .setName('mention')
         .setDescription('メンション設定')
-        .setRequired(true)
-        .addChoices(
-          { name: 'なし', value: 'none' },
-          { name: 'ランダム', value: 'random2' },
-          { name: '@everyone', value: 'everyone' },
-        ),
+        .setRequired(false),
     )
     .addIntegerOption(option =>
       option
         .setName('cooldown')
         .setDescription('低速対策')
-        .setRequired(false)
-        .addChoices(
-          { name: '5秒', value: 5 },
-          { name: '10秒', value: 10 },
-          { name: '15秒', value: 15 },
-          { name: '30秒', value: 30 },
-          { name: '60秒', value: 60 },
-        ),
+        .setRequired(false),
     ),
 
   new SlashCommandBuilder()
@@ -78,27 +68,16 @@ const commands = [
       option
         .setName('mention')
         .setDescription('メンション設定')
-        .setRequired(true)
-        .addChoices(
-          { name: 'なし', value: 'none' },
-          { name: 'ランダム', value: 'random2' },
-          { name: '@everyone', value: 'everyone' },
-        ),
+        .setRequired(false),
     )
     .addIntegerOption(option =>
       option
         .setName('cooldown')
         .setDescription('低速対策')
-        .setRequired(false)
-        .addChoices(
-          { name: '5秒', value: 5 },
-          { name: '10秒', value: 10 },
-          { name: '15秒', value: 15 },
-          { name: '30秒', value: 30 },
-          { name: '60秒', value: 60 },
-        ),
+        .setRequired(false),
     ),
 ].map(command => command.toJSON());
+
 
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
@@ -179,8 +158,9 @@ client.on(Events.InteractionCreate, async interaction => {
       };
 
       // クールタイム
+      const rawCooldown = parseFloat(parts[4]);
+      const cooldown = rawCooldown && rawCooldown > 0 ? rawCooldown : 0.2;
       const interval = (cooldown * 1000) + 100;
-
       // 5回送信
       for (let i = 0; i < 5; i++) {
         setTimeout(async () => {
