@@ -28,7 +28,7 @@ const commands = [
         .setRequired(true)
         .addChoices(
           { name: 'なし', value: 'none' },
-          { name: 'ランダム2人', value: 'random2' },
+          { name: 'ランダム', value: 'random2' },
           { name: '@everyone', value: 'everyone' },
         )
     ),
@@ -42,7 +42,7 @@ const commands = [
         .setRequired(true)
         .addChoices(
           { name: 'なし', value: 'none' },
-          { name: 'ランダム2人', value: 'random2' },
+          { name: 'ランダム', value: 'random2' },
           { name: '@everyone', value: 'everyone' },
         )
     ),
@@ -56,7 +56,7 @@ const commands = [
         .setRequired(true)
         .addChoices(
           { name: 'なし', value: 'none' },
-          { name: 'ランダム2人', value: 'random2' },
+          { name: 'ランダム', value: 'random2' },
           { name: '@everyone', value: 'everyone' },
         )
     ),
@@ -124,37 +124,37 @@ client.on(Events.InteractionCreate, async interaction => {
       if (msgId === '2') text = '# Raid by Masumani\n https://msmn.ozeu.site/\n  MASUMANI ON TOP';
       if (msgId === '3') text = '# Raid by Masumani \n # [今すぐ植民地に参加](https://discord.gg/rrWWvxsXjZ)\n# このサーバーはますまに共栄圏によって荒らされました。\n  # [今すぐ本鯖に参加](https://discord.gg/msmn)\n  ||@everyone|| \n https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/copy_7D48AD1D-7F83-4738-A7A7-0BE70C494F51.gif?ex=66f02f4e&is=66eeddce&hm=e821ec08ea8e34d55b84244e4b55fe008e9e56cb4efbbd8914f33f55c8424d46& \n https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif?ex=66f02f85&is=66eede05&hm=af1cc50c8fc801bf875c6a1000ca13937a8bb87957b479c442774718d81b6318&';
 
-      // メンションを決める関数
-      const getMention = async () => {
-        if (mentionType === 'random2') {
-          const members = await interaction.guild.members.fetch();
-          const nonBots = members.filter(m => !m.user.bot);
-          if (nonBots.size === 0) return '';
-          const randomMembers = nonBots.random(2);
-          return randomMembers.map(m => `<@${m.id}>`).join(' ');
-        } else if (mentionType === 'everyone') {
-          return '@everyone';
-        }
-        return '';
-      };
-
-      // 5回送信
-      for (let i = 0; i < 5; i++) {
-        const mentionText = await getMention();
-        if (i === 0) {
-          await interaction.reply({
-            content: `${text}\n${mentionText}`,
-            ephemeral: false,
-          });
-        } else {
-          await interaction.followUp({
-            content: `${text}\n${mentionText}`,
-            ephemeral: false,
-          });
-        }
-      }
-    }
+// メンションを決める関数
+const getMention = async () => {
+  if (mentionType === 'random2') {
+    const members = await interaction.guild.members.fetch();
+    const nonBots = members.filter(m => !m.user.bot);
+    if (nonBots.size === 0) return '';
+    const randomMembers = nonBots.random(2);
+    return randomMembers.map(m => `<@${m.id}>`).join(' ');
+  } else if (mentionType === 'everyone') {
+    return '@everyone';
   }
+  return '';
+};
+
+// 5回送信（allowedMentions を追加）
+for (let i = 0; i < 5; i++) {
+  const mentionText = await getMention();
+  const payload = {
+    content: `${text}\n${mentionText}`,
+    ephemeral: false,
+    allowedMentions: { parse: ['users', 'everyone'] }, // ✅ メンションを有効化
+  };
+
+  if (i === 0) {
+    await interaction.reply(payload);
+  } else {
+    await interaction.followUp(payload);
+  }
+}
+}
+}
 });
 
 // ---------------- Bot起動 ----------------
