@@ -33,7 +33,7 @@ const commands = [
       option
         .setName('cooldown')
         .setDescription('低速対策')
-        .setRequired(true)
+        .setRequired(false)
         .addChoices(
           { name: '5秒', value: 5 },
           { name: '10秒', value: 10 },
@@ -61,7 +61,7 @@ const commands = [
       option
         .setName('cooldown')
         .setDescription('低速対策')
-        .setRequired(true)
+        .setRequired(false)
         .addChoices(
           { name: '5秒', value: 5 },
           { name: '10秒', value: 10 },
@@ -89,7 +89,7 @@ const commands = [
       option
         .setName('cooldown')
         .setDescription('低速対策')
-        .setRequired(true)
+        .setRequired(false)
         .addChoices(
           { name: '5秒', value: 5 },
           { name: '10秒', value: 10 },
