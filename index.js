@@ -128,7 +128,7 @@ client.on(Events.InteractionCreate, async interaction => {
       const parts = interaction.customId.split('_');
       const spamType = parts[2];
       const mentionType = parts[3];
-      const cooldown = parseInt(parts[4] || '5');
+      const cooldown = interaction.options.getInteger('cooldown');
 
       let text = '';
       switch (spamType) {
@@ -158,9 +158,9 @@ client.on(Events.InteractionCreate, async interaction => {
       };
 
       // クールタイム
-      const rawCooldown = parseFloat(parts[4]);
-      const cooldown = rawCooldown && rawCooldown > 0 ? rawCooldown : 0.2;
-      const interval = (cooldown * 1000) + 100;
+        const rawCooldown = parseFloat(parts[4]);
+        const cooldownValue = rawCooldown && rawCooldown > 0 ? rawCooldown : 0.2;
+        const interval = (cooldownValue * 1000) + 100;+ 100;
       // 5回送信
       for (let i = 0; i < 5; i++) {
         setTimeout(async () => {
