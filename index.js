@@ -181,3 +181,7 @@ client.on(Events.InteractionCreate, async interaction => {
       }
     }, i * interval);
   }
+  }); // ← interactionCreate を閉じる
+
+  // ---------------- Bot起動 ----------------
+  client.login(process.env.TOKEN);
