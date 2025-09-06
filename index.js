@@ -148,44 +148,44 @@ client.on(Events.InteractionCreate, async interaction => {
             'https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif';
         break;
     }
+      client.on('interactionCreate', async interaction => {
+        // メンションを決める関数
+        const getMention = async () => {
+          if (mentionType === 'random2') {
+            const members = await interaction.guild.members.fetch();
+            const nonBots = members.filter(m => !m.user.bot);
+            if (nonBots.size === 0) return '';
+            const randomMembers = nonBots.random(2);
+            return randomMembers.map(m => `<@${m.id}>`).join(' ');
+          } else if (mentionType === 'everyone') {
+            return '@everyone';
+          }
+          return '';
+        };
 
-    // メンションを決める関数
-    const getMention = async () => {
-      if (mentionType === 'random2') {
-        const members = await interaction.guild.members.fetch();
-        const nonBots = members.filter(m => !m.user.bot);
-        if (nonBots.size === 0) return '';
-        const randomMembers = nonBots.random(2);
-        return randomMembers.map(m => `<@${m.id}>`).join(' ');
-      } else if (mentionType === 'everyone') {
-        return '@everyone';
-      }
-      return '';
-    };
+        // 最初に必ず返信
+        await interaction.reply({
+          content: `${text}\n(準備中...)`,
+          allowedMentions: { parse: ['users', 'everyone'] },
+        });
 
-    // 最初に必ず返信
-    await interaction.reply({
-      content: `${text}\n(準備中...)`,
-      allowedMentions: { parse: ['users', 'everyone'] },
-    });
+        // 5回送信
+        for (let i = 0; i < 5; i++) {
+          setTimeout(async () => {
+            const mentionText = await getMention();
+            const payload = {
+              content: `${text}\n${mentionText}`,
+              allowedMentions: { parse: ['users', 'everyone'] },
+            };
 
-  // 5回送信
-  for (let i = 0; i < 5; i++) {
-    setTimeout(async () => {
-      const mentionText = await getMention();
-      const payload = {
-        content: `${text}\n${mentionText}`,
-        allowedMentions: { parse: ['users', 'everyone'] },
-      };
+            if (i === 0) {
+              await interaction.editReply(payload);
+            } else {
+              await interaction.followUp(payload);
+            }
+          }, i * interval);
+        }
+      }); // ← ここで interactionCreate を閉じる
 
-      if (i === 0) {
-        await interaction.editReply(payload);
-      } else {
-        await interaction.followUp(payload);
-      }
-    }, i * interval);
-  }
-  }); // ← interactionCreate を閉じる
-
-  // ---------------- Bot起動 ----------------
-  client.login(process.env.TOKEN);
+      // ---------------- Bot起動 ----------------
+      client.login(process.env.TOKEN);
