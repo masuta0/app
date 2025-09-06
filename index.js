@@ -190,12 +190,6 @@ const commands = [
         return '';
       };
 
-      // 最初に必ず返信
-      await interaction.reply({
-        content: `${text}\n(準備中...)`,
-        allowedMentions: { parse: ['users', 'everyone'] },
-      });
-
       // 5回送信
       for (let i = 0; i < 5; i++) {
         setTimeout(async () => {
