@@ -165,10 +165,9 @@ client.on(Events.InteractionCreate, async interaction => {
       allowedMentions: { parse: ['users', 'everyone'] },
     });
 
-// 5回送信
-for (let i = 0; i < 5; i++) {
-  setTimeout(() => {
-    (async () => {
+  // 5回送信
+  for (let i = 0; i < 5; i++) {
+    setTimeout(async () => {
       const mentionText = await getMention();
       const payload = {
         content: `${text}\n${mentionText}`,
@@ -180,6 +179,5 @@ for (let i = 0; i < 5; i++) {
       } else {
         await interaction.followUp(payload);
       }
-    })();
-  }, i * interval);
-}
+    }, i * interval);
+  }
