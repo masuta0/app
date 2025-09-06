@@ -183,5 +183,3 @@ for (let i = 0; i < 5; i++) {
     })();
   }, i * interval);
 }
-  // ---------------- Bot起動 ----------------
-  client.login(process.env.TOKEN);
