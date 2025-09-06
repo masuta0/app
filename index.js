@@ -122,12 +122,16 @@ client.on(Events.InteractionCreate, async interaction => {
       // rawCooldown が undefined または NaN → デフォルト 0.5秒 (500ms)
       const interval = rawCooldown ? parseFloat(rawCooldown) * 1000 : 500;
 
-      const safeInterval = isNaN(interval) ? 500 : interval;
+        client.on('interactionCreate', async interaction => {
+          if (interaction.isChatInputCommand()) {
+            // スラッシュコマンド処理
+          } else if (interaction.isButton()) {
+            const [btnType, mentionType, rawCooldown] = interaction.customId.split('|');
+            const interval = parseInt(rawCooldown, 10);
+            const safeInterval = isNaN(interval) ? 500 : interval;
 
-      // safeInterval をループで使う
-    }
-    let text = '';
-    switch (btnType) {
+            let text = '';
+            switch (btnType)
       case 'spam_btn_1':
         text = '# Raid by Masumani\nhttps://discord.gg/msmn\nこのサーバーはますまに共栄圏によって荒らされました\nMASUMANI ON TOP';
         break;
