@@ -130,7 +130,7 @@ client.on(Events.InteractionCreate, async interaction => {
         break;
       case 'spam_btn_3':
         text =
-          '# Raid by Masumani\n +
+          '# Raid by Masumani\n'+
           '# [今すぐ植民地に参加](https://discord.gg/rrWWvxsXjZ)\n' +
           '# このサーバーはますまに共栄圏によって荒らされました。\n' +
           '# [今すぐ本鯖に参加](https://discord.gg/msmn)\n' +
