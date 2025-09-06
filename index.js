@@ -25,7 +25,7 @@ const commands = [
         .setRequired(false)
         .addChoices(
           { name: 'なし', value: 'none' },
-          { name: 'ランダム2人', value: 'random2' },
+          { name: 'ランダム', value: 'random2' },
           { name: '@everyone', value: 'everyone' },
         ),
     )
@@ -116,10 +116,16 @@ client.on(Events.InteractionCreate, async interaction => {
   }
 
   // ---------------- ボタン処理 ----------------
-  if (interaction.isButton()) {
-    const [btnType, mentionType, rawCooldown] = interaction.customId.split('|');
-    const interval = parseInt(rawCooldown, 10) * 1000 || 1000;
+    if (interaction.isButton()) {
+      const [btnType, mentionType, rawCooldown] = interaction.customId.split('|');
 
+      // rawCooldown が undefined または NaN → デフォルト 0.5秒 (500ms)
+      const interval = rawCooldown ? parseFloat(rawCooldown) * 1000 : 500;
+
+      const safeInterval = isNaN(interval) ? 500 : interval;
+
+      // safeInterval をループで使う
+    }
     let text = '';
     switch (btnType) {
       case 'spam_btn_1':
