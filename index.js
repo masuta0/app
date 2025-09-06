@@ -165,24 +165,23 @@ client.on(Events.InteractionCreate, async interaction => {
       allowedMentions: { parse: ['users', 'everyone'] },
     });
 
-    // 5回送信
-    for (let i = 0; i < 5; i++) {
-      setTimeout(async () => {
-        const mentionText = await getMention();
-        const payload = {
-          content: `${text}\n${mentionText}`,
-          allowedMentions: { parse: ['users', 'everyone'] },
-        };
+// 5回送信
+for (let i = 0; i < 5; i++) {
+  setTimeout(() => {
+    (async () => {
+      const mentionText = await getMention();
+      const payload = {
+        content: `${text}\n${mentionText}`,
+        allowedMentions: { parse: ['users', 'everyone'] },
+      };
 
-        if (i === 0) {
-          await interaction.editReply(payload);
-        } else {
-          await interaction.followUp(payload);
-        }
-      }, i * interval);
-    }
-  }
-});
-
-// ---------------- Bot起動 ----------------
-client.login(process.env.TOKEN);
+      if (i === 0) {
+        await interaction.editReply(payload);
+      } else {
+        await interaction.followUp(payload);
+      }
+    })();
+  }, i * interval);
+}
+  // ---------------- Bot起動 ----------------
+  client.login(process.env.TOKEN);
