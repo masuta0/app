@@ -13,91 +13,92 @@
 
   const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-  // ---------------- スラッシュコマンド定義 ----------------
-  const commands = [
-    new SlashCommandBuilder()
-      .setName('spam1')
-      .setDescription('シンプルスパム')
-      .addStringOption(option =>
-        option
-          .setName('mention')
-          .setDescription('メンション設定')
-          .setRequired(false)
-          .addChoices(
-            { name: 'なし', value: 'none' },
-            { name: 'ランダム', value: 'random2' },
-            { name: '@everyone', value: 'everyone' },
-          ),
-      )
-      .addIntegerOption(option =>
-        option
-          .setName('cooldown')
-          .setDescription('低速対策 (送信間隔)')
-          .setRequired(false)
-          .addChoices(
-            { name: '5秒', value: 5 },
-            { name: '10秒', value: 10 },
-            { name: '15秒', value: 15 },
-            { name: '30秒', value: 30 },
-            { name: '60秒', value: 60 },
-          ),
-      ),
-
-    new SlashCommandBuilder()
-      .setName('spam2')
-      .setDescription('招待リンク対策回避')
-      .addStringOption(option =>
-    .setName('mention')
-    .setDescription('メンション設定')
-    .setRequired(false)
-    .addChoices(
-      { name: 'なし', value: 'none' },
-      { name: 'ランダム', value: 'random2' },
-      { name: '@everyone', value: 'everyone' },
-    ),
+// ---------------- スラッシュコマンド定義 ----------------
+const commands = [
+  new SlashCommandBuilder()
+    .setName('spam1')
+    .setDescription('シンプルスパム')
+    .addStringOption(option =>
+      option
+        .setName('mention')
+        .setDescription('メンション設定')
+        .setRequired(false)
+        .addChoices(
+          { name: 'なし', value: 'none' },
+          { name: 'ランダム', value: 'random2' },
+          { name: '@everyone', value: 'everyone' },
+        ),
     )
     .addIntegerOption(option =>
-    option
-    .setName('cooldown')
-    .setDescription('低速対策 (送信間隔)')
-    .setRequired(false)
-    .addChoices(
-      { name: '5秒', value: 5 },
-      { name: '10秒', value: 10 },
-      { name: '15秒', value: 15 },
-      { name: '30秒', value: 30 },
-      { name: '60秒', value: 60 },
-    ),
+      option
+        .setName('cooldown')
+        .setDescription('低速対策 (送信間隔)')
+        .setRequired(false)
+        .addChoices(
+          { name: '5秒', value: 5 },
+          { name: '10秒', value: 10 },
+          { name: '15秒', value: 15 },
+          { name: '30秒', value: 30 },
+          { name: '60秒', value: 60 },
+        ),
     ),
 
-    new SlashCommandBuilder()
-      .setName('spam3')
-      .setDescription('植民地,GIF付き')
-      .addStringOption(option =>
-    .setName('mention')
-    .setDescription('メンション設定')
-    .setRequired(false)
-    .addChoices(
-      { name: 'なし', value: 'none' },
-      { name: 'ランダム', value: 'random2' },
-      { name: '@everyone', value: 'everyone' },
-    ),
+  new SlashCommandBuilder()
+    .setName('spam2')
+    .setDescription('招待リンク対策回避')
+    .addStringOption(option =>
+      option
+        .setName('mention')
+        .setDescription('メンション設定')
+        .setRequired(false)
+        .addChoices(
+          { name: 'なし', value: 'none' },
+          { name: 'ランダム', value: 'random2' },
+          { name: '@everyone', value: 'everyone' },
+        ),
     )
     .addIntegerOption(option =>
-    option
-    .setName('cooldown')
-    .setDescription('低速対策 (送信間隔)')
-    .setRequired(false)
-    .addChoices(
-      { name: '5秒', value: 5 },
-      { name: '10秒', value: 10 },
-      { name: '15秒', value: 15 },
-      { name: '30秒', value: 30 },
-      { name: '60秒', value: 60 },
-    ),
+      option
+        .setName('cooldown')
+        .setDescription('低速対策 (送信間隔)')
+        .setRequired(false)
+        .addChoices(
+          { name: '5秒', value: 5 },
+          { name: '10秒', value: 10 },
+          { name: '15秒', value: 15 },
+          { name: '30秒', value: 30 },
+          { name: '60秒', value: 60 },
+        ),
     ),
 
-  ].map(command => command.toJSON());
+  new SlashCommandBuilder()
+    .setName('spam3')
+    .setDescription('植民地,GIF付き')
+    .addStringOption(option =>
+      option
+        .setName('mention')
+        .setDescription('メンション設定')
+        .setRequired(false)
+        .addChoices(
+          { name: 'なし', value: 'none' },
+          { name: 'ランダム', value: 'random2' },
+          { name: '@everyone', value: 'everyone' },
+        ),
+    )
+    .addIntegerOption(option =>
+      option
+        .setName('cooldown')
+        .setDescription('低速対策 (送信間隔)')
+        .setRequired(false)
+        .addChoices(
+          { name: '5秒', value: 5 },
+          { name: '10秒', value: 10 },
+          { name: '15秒', value: 15 },
+          { name: '30秒', value: 30 },
+          { name: '60秒', value: 60 },
+        ),
+    ),
+].map(command => command.toJSON());
 
   const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
