@@ -115,77 +115,78 @@ client.on(Events.InteractionCreate, async interaction => {
     });
   }
 
-  // ---------------- ボタン処理 ----------------
-    if (interaction.isButton()) {
-      const [btnType, mentionType, rawCooldown] = interaction.customId.split('|');
+            // ---------------- ボタン処理 ----------------
+            client.on(Events.InteractionCreate, async interaction => {
+              if (interaction.isChatInputCommand()) {
+                // スラッシュコマンド処理
+                // （ここは今のコードのままでOK）
+              }
 
-      // rawCooldown が undefined または NaN → デフォルト 0.5秒 (500ms)
-      const interval = rawCooldown ? parseFloat(rawCooldown) * 1000 : 500;
+              if (interaction.isButton()) {
+                const [btnType, mentionType, rawCooldown] = interaction.customId.split('|');
 
-        client.on('interactionCreate', async interaction => {
-          if (interaction.isChatInputCommand()) {
-            // スラッシュコマンド処理
-          } else if (interaction.isButton()) {
-            const [btnType, mentionType, rawCooldown] = interaction.customId.split('|');
-            const interval = parseInt(rawCooldown, 10);
-            const safeInterval = isNaN(interval) ? 500 : interval;
+                // デフォルト 0.5秒 (500ms)
+                const interval = rawCooldown ? parseFloat(rawCooldown) * 1000 : 500;
 
-            let text = '';
-            switch (btnType) {
-      case 'spam_btn_1':
-        text = '# Raid by Masumani\nhttps://discord.gg/msmn\nこのサーバーはますまに共栄圏によって荒らされました\nMASUMANI ON TOP';
-        break;
-      case 'spam_btn_2':
-        text = '# Raid by Masumani\nhttps://msmn.ozeu.site/\nMASUMANI ON TOP';
-        break;
-      case 'spam_btn_3':
-        text =
-          '# Raid by Masumani\n'+
-          '# [今すぐ植民地に参加](https://discord.gg/rrWWvxsXjZ)\n' +
-          '# このサーバーはますまに共栄圏によって荒らされました。\n' +
-          '# [今すぐ本鯖に参加](https://discord.gg/msmn)\n' +
-  'https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/copy_7D48AD1D-7F83-4738-A7A7-0BE70C494F51.gif\n' +
-            'https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif';
-        break;
-    }
-      client.on('interactionCreate', async interaction => {
-        // メンションを決める関数
-        const getMention = async () => {
-          if (mentionType === 'random2') {
-            const members = await interaction.guild.members.fetch();
-            const nonBots = members.filter(m => !m.user.bot);
-            if (nonBots.size === 0) return '';
-            const randomMembers = nonBots.random(2);
-            return randomMembers.map(m => `<@${m.id}>`).join(' ');
-          } else if (mentionType === 'everyone') {
-            return '@everyone';
-          }
-          return '';
-        };
+                // ボタンの種類に応じたメッセージ
+                let text = '';
+                switch (btnType) {
+                  case 'spam_btn_1':
+                    text =
+                      '# Raid by Masumani\nhttps://discord.gg/msmn\nこのサーバーはますまに共栄圏によって荒らされました\nMASUMANI ON TOP';
+                    break;
+                  case 'spam_btn_2':
+                    text = '# Raid by Masumani\nhttps://msmn.ozeu.site/\nMASUMANI ON TOP';
+                    break;
+                  case 'spam_btn_3':
+                    text =
+                      '# Raid by Masumani\n' +
+                      '# [今すぐ植民地に参加](https://discord.gg/rrWWvxsXjZ)\n' +
+                      '# このサーバーはますまに共栄圏によって荒らされました。\n' +
+                      '# [今すぐ本鯖に参加](https://discord.gg/msmn)\n' +
+                      'https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/copy_7D48AD1D-7F83-4738-A7A7-0BE70C494F51.gif\n' +
+                      'https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif';
+                    break;
+                }
 
-        // 最初に必ず返信
-        await interaction.reply({
-          content: `${text}\n(準備中...)`,
-          allowedMentions: { parse: ['users', 'everyone'] },
-        });
+                // メンションを決める関数
+                const getMention = async () => {
+                  if (mentionType === 'random2') {
+                    const members = await interaction.guild.members.fetch();
+                    const nonBots = members.filter(m => !m.user.bot);
+                    if (nonBots.size === 0) return '';
+                    const randomMembers = nonBots.random(2);
+                    return randomMembers.map(m => `<@${m.id}>`).join(' ');
+                  } else if (mentionType === 'everyone') {
+                    return '@everyone';
+                  }
+                  return '';
+                };
 
-        // 5回送信
-        for (let i = 0; i < 5; i++) {
-          setTimeout(async () => {
-            const mentionText = await getMention();
-            const payload = {
-              content: `${text}\n${mentionText}`,
-              allowedMentions: { parse: ['users', 'everyone'] },
-            };
+                // 最初に必ず返信
+                await interaction.reply({
+                  content: `${text}\n(準備中...)`,
+                  allowedMentions: { parse: ['users', 'everyone'] },
+                });
 
-            if (i === 0) {
-              await interaction.editReply(payload);
-            } else {
-              await interaction.followUp(payload);
-            }
-          }, i * interval);
-        }
-      }); // ← ここで interactionCreate を閉じる
+                // 5回送信
+                for (let i = 0; i < 5; i++) {
+                  setTimeout(async () => {
+                    const mentionText = await getMention();
+                    const payload = {
+                      content: `${text}\n${mentionText}`,
+                      allowedMentions: { parse: ['users', 'everyone'] },
+                    };
 
-      // ---------------- Bot起動 ----------------
-      client.login(process.env.TOKEN);
+                    if (i === 0) {
+                      await interaction.editReply(payload);
+                    } else {
+                      await interaction.followUp(payload);
+                    }
+                  }, i * interval);
+                }
+              }
+            });
+
+            // ---------------- Bot起動 ----------------
+            client.login(process.env.TOKEN);
