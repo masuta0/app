@@ -131,7 +131,7 @@ client.on(Events.InteractionCreate, async interaction => {
             const safeInterval = isNaN(interval) ? 500 : interval;
 
             let text = '';
-            switch (btnType)
+            switch (btnType) {
       case 'spam_btn_1':
         text = '# Raid by Masumani\nhttps://discord.gg/msmn\nこのサーバーはますまに共栄圏によって荒らされました\nMASUMANI ON TOP';
         break;
