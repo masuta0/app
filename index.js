@@ -148,7 +148,7 @@ client.on(Events.InteractionCreate, async interaction => {
     await interaction.reply({
       content: `実行「${commandName}」を選びました。ボタンで開始してください。`,
       components: [row],
-      flags: 64, // ephemeral の代わり
+      flags: 64, // ephemeral
     });
   }
 
@@ -176,6 +176,7 @@ client.on(Events.InteractionCreate, async interaction => {
           'https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif';
         break;
     }
+
     // 応答保留
     await interaction.deferReply();
 
@@ -229,7 +230,8 @@ client.on(Events.InteractionCreate, async interaction => {
       // 間隔待機
       if (i < 4) await delay(interval);
     }
-    });
+  }
+});
 
-    // ---------------- Bot起動 ----------------
-    client.login(process.env.TOKEN);
+// ---------------- Bot起動 ----------------
+client.login(process.env.TOKEN);
