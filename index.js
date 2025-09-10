@@ -164,7 +164,7 @@ client.on(Events.InteractionCreate, async interaction => {
           '# Raid by Masumani\nhttps://discord.gg/msmn\nこのサーバーはますまに共栄圏によって荒らされました\nMASUMANI ON TOP';
         break;
       case 'spam_btn_2':
-        text = '# Raid by Masumani\nhttps://msmn.ozeu.site/\nMASUMANI ON TOP';
+        text = '# Raid by Masumani\n https://x.gd/dkeDO\nMASUMANI ON TOP';
         break;
       case 'spam_btn_3':
         text =
@@ -194,40 +194,41 @@ client.on(Events.InteractionCreate, async interaction => {
       return '';
     };
 
-// 5回送信
-for (let i = 0; i < 5; i++) {
-  setTimeout(async () => {
-    const mentionText = await getMention();
-    const payload = {
-      content: `${text}\n${mentionText}`,
-      allowedMentions: { parse: ['users', 'everyone'] },
-    };
+    // 遅延用の関数
+    const delay = ms => new Promise(res => setTimeout(res, ms));
 
-    try {
-      if (i === 0) {
-        await interaction.editReply(payload);
-      } else {
-        await interaction.followUp(payload);
+    // 5回送信（順番に実行される）
+    for (let i = 0; i < 5; i++) {
+      const mentionText = await getMention();
+      const payload = {
+        content: `${text}\n${mentionText}`,
+        allowedMentions: { parse: ['users', 'everyone'] },
+      };
+
+      try {
+        if (i === 0) {
+          await interaction.editReply(payload);
+        } else {
+          await interaction.followUp(payload);
+        }
+      } catch (err) {
+        console.error('送信エラー:', err);
+
+        let reason = '不明なエラー';
+        if (err.code === 200000) {
+          reason = 'AutoMod によってブロックされました。';
+        } else if (err.code === 50001) {
+          reason = 'Bot に必要な権限がありません (Missing Access)。';
+        }
+
+        await interaction.followUp({
+          content: `⚠️ 送信できませんでした: ${reason}`,
+          flags: 64,
+        });
       }
-    } catch (err) {
-      console.error('送信エラー:', err);
 
-      let reason = '不明なエラー';
-      if (err.code === 200000) {
-        reason = 'AutoMod によってメッセージがブロックされました。';
-      } else if (err.code === 50001) {
-        reason = 'Bot に必要な権限がありません (Missing Access)。';
-      } else if (err.code === 50013) {
-        reason = 'Bot にメッセージ送信権限がありません。';
-      }
-
-      // 実行者にだけ見える通知
-      await interaction.followUp({
-        content: `⚠️ メッセージを送信できませんでした: ${reason}`,
-        flags: 64, // 実行者のみに表示
-      });
+      // 間隔待機
+      if (i < 4) await delay(interval);
     }
-  }, i * interval);
-}
 // ---------------- Bot起動 ----------------
 client.login(process.env.TOKEN);
