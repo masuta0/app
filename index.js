@@ -176,9 +176,8 @@ client.on(Events.InteractionCreate, async interaction => {
           'https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif';
         break;
     }
-
     // 応答保留（考え中は表示されない）
-    await interaction.deferReply({ fetchReply: true });
+    await interaction.deferReply();
 
     // メンションを決める関数
     const getMention = async () => {
@@ -223,12 +222,11 @@ client.on(Events.InteractionCreate, async interaction => {
 
         await interaction.followUp({
           content: `⚠️ 送信できませんでした: ${reason}`,
-          flags: 64,
+          flags: 64, // 実行者のみに表示
         });
       }
 
       // 間隔待機
       if (i < 4) await delay(interval);
-    }
-// ---------------- Bot起動 ----------------
-client.login(process.env.TOKEN);
+    });
+    client.login(process.env.TOKEN);
