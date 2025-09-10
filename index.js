@@ -128,7 +128,7 @@ client.on(Events.InteractionCreate, async interaction => {
       messageText = '# Raid by Masumani\nhttps://discord.gg/msmn\nMASUMANI ON TOP';
       buttonId = `spam_btn_1|${mentionType}|${cooldown}`;
     } else if (commandName === 'spam2') {
-      messageText = '# Raid by Masumani\nhttps://msmn.ozeu.site/\nMASUMANI ON TOP';
+      messageText = '# Raid by Masumani\nhttps://x.gd/dkeDO\nMASUMANI ON TOP';
       buttonId = `spam_btn_2|${mentionType}|${cooldown}`;
     } else if (commandName === 'spam3') {
       messageText =
