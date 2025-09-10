@@ -229,7 +229,6 @@ client.on(Events.InteractionCreate, async interaction => {
       // 間隔待機
       if (i < 4) await delay(interval);
     }
-    }
     });
 
     // ---------------- Bot起動 ----------------
