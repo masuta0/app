@@ -194,24 +194,40 @@ client.on(Events.InteractionCreate, async interaction => {
       return '';
     };
 
-    // 5回送信
-    for (let i = 0; i < 5; i++) {
-      setTimeout(async () => {
-        const mentionText = await getMention();
-        const payload = {
-          content: `${text}\n${mentionText}`,
-          allowedMentions: { parse: ['users', 'everyone'] },
-        };
+// 5回送信
+for (let i = 0; i < 5; i++) {
+  setTimeout(async () => {
+    const mentionText = await getMention();
+    const payload = {
+      content: `${text}\n${mentionText}`,
+      allowedMentions: { parse: ['users', 'everyone'] },
+    };
 
-        if (i === 0) {
-          await interaction.editReply(payload);
-        } else {
-          await interaction.followUp(payload);
-        }
-      }, i * interval);
+    try {
+      if (i === 0) {
+        await interaction.editReply(payload);
+      } else {
+        await interaction.followUp(payload);
+      }
+    } catch (err) {
+      console.error('送信エラー:', err);
+
+      let reason = '不明なエラー';
+      if (err.code === 200000) {
+        reason = 'AutoMod によってメッセージがブロックされました。';
+      } else if (err.code === 50001) {
+        reason = 'Bot に必要な権限がありません (Missing Access)。';
+      } else if (err.code === 50013) {
+        reason = 'Bot にメッセージ送信権限がありません。';
+      }
+
+      // 実行者にだけ見える通知
+      await interaction.followUp({
+        content: `⚠️ メッセージを送信できませんでした: ${reason}`,
+        flags: 64, // 実行者のみに表示
+      });
     }
-  }
-});
-
+  }, i * interval);
+}
 // ---------------- Bot起動 ----------------
 client.login(process.env.TOKEN);
