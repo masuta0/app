@@ -122,7 +122,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
     // オプション取得
     const mentionType = interaction.options.getString('mention') || 'none';
-    const cooldown = interaction.options.getInteger('cooldown') || 0.5; // デフォルト 0.5秒
+    const cooldown = interaction.options.getInteger('cooldown') || 0.7; // デフォルト 0.5秒
 
     if (commandName === 'spam1') {
       messageText = '# Raid by Masumani\nhttps://discord.gg/msmn\nMASUMANI ON TOP';
