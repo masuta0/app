@@ -25,7 +25,6 @@ const commands = [
         .setRequired(false)
         .addChoices(
           { name: 'なし', value: 'none' },
-          { name: 'ランダム', value: 'random2' },
           { name: '@everyone', value: 'everyone' },
         ),
     )
@@ -53,7 +52,6 @@ const commands = [
         .setRequired(false)
         .addChoices(
           { name: 'なし', value: 'none' },
-          { name: 'ランダム', value: 'random2' },
           { name: '@everyone', value: 'everyone' },
         ),
     )
@@ -81,7 +79,6 @@ const commands = [
         .setRequired(false)
         .addChoices(
           { name: 'なし', value: 'none' },
-          { name: 'ランダム', value: 'random2' },
           { name: '@everyone', value: 'everyone' },
         ),
     )
@@ -122,20 +119,20 @@ client.on(Events.InteractionCreate, async interaction => {
 
     // オプション取得
     const mentionType = interaction.options.getString('mention') || 'none';
-    const cooldown = interaction.options.getInteger('cooldown') || 0.7; // デフォルト 0.5秒
+    const cooldown = interaction.options.getInteger('cooldown') || 0.7; // デフォルト 0.7秒
 
     if (commandName === 'spam1') {
-      messageText = '# Raid by Masumani\nhttps://discord.gg/msmn\nMASUMANI ON TOP';
+      messageText = '# Raid by Masumani\nhttps://discord.gg/masumani\nMASUMANI ON TOP';
       buttonId = `spam_btn_1|${mentionType}|${cooldown}`;
     } else if (commandName === 'spam2') {
-      messageText = '# Raid by Masumani\nhttps://x.gd/dkeDO\nMASUMANI ON TOP';
+      messageText = '# Raid by Masumani\nhttps://x.gd/xOROY\nMASUMANI ON TOP';
       buttonId = `spam_btn_2|${mentionType}|${cooldown}`;
     } else if (commandName === 'spam3') {
       messageText =
         '# Raid by Masumani\n' +
         '# [今すぐ植民地に参加](https://discord.gg/rrWWvxsXjZ)\n' +
         '# このサーバーはますまに共栄圏によって荒らされました。\n' +
-        '# [今すぐ本鯖に参加](https://discord.gg/msmn)\n' +
+        '# [今すぐ本鯖に参加](https://discord.gg/masumani)\n' +
         'https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/copy_7D48AD1D-7F83-4738-A7A7-0BE70C494F51.gif\n' +
         'https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif';
       buttonId = `spam_btn_3|${mentionType}|${cooldown}`;
@@ -146,7 +143,7 @@ client.on(Events.InteractionCreate, async interaction => {
     );
 
     await interaction.reply({
-      content: `実行「${commandName}」を選びました。ボタンで開始してください。`,
+      content: `実行「${commandName}」`,
       components: [row],
       flags: 64, // ephemeral
     });
@@ -155,23 +152,23 @@ client.on(Events.InteractionCreate, async interaction => {
   // ---------------- ボタン処理 ----------------
   if (interaction.isButton()) {
     const [btnType, mentionType, rawCooldown] = interaction.customId.split('|');
-    const interval = parseFloat(rawCooldown) * 1000 || 500; // デフォルト0.5秒
+    const interval = parseFloat(rawCooldown) * 1000 || 700; // デフォルト0.7秒
 
     let text = '';
     switch (btnType) {
       case 'spam_btn_1':
         text =
-          '# Raid by Masumani\nhttps://discord.gg/msmn\nこのサーバーはますまに共栄圏によって荒らされました\nMASUMANI ON TOP';
+          '# Raid by Masumani\nhttps://discord.gg/masumani\nこのサーバーはますまに共栄圏によって荒らされました\nMASUMANI ON TOP';
         break;
       case 'spam_btn_2':
-        text = '# Raid by Masumani\n https://x.gd/dkeDO\nMASUMANI ON TOP';
+        text = '# Raid by Masumani\n https://x.gd/xOROY\nMASUMANI ON TOP';
         break;
       case 'spam_btn_3':
         text =
           '# Raid by Masumani\n' +
           '# [今すぐ植民地に参加](https://discord.gg/rrWWvxsXjZ)\n' +
           '# このサーバーはますまに共栄圏によって荒らされました。\n' +
-          '# [今すぐ本鯖に参加](https://discord.gg/msmn)\n' +
+          '# [今すぐ本鯖に参加](https://discord.gg/masumani)\n' +
           'https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/copy_7D48AD1D-7F83-4738-A7A7-0BE70C494F51.gif\n' +
           'https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif';
         break;
@@ -180,15 +177,9 @@ client.on(Events.InteractionCreate, async interaction => {
     // 応答保留
     await interaction.deferReply();
 
-    // メンションを決める関数
-    const getMention = async () => {
-      if (mentionType === 'random2') {
-        const members = await interaction.guild.members.fetch();
-        const nonBots = members.filter(m => !m.user.bot);
-        if (nonBots.size === 0) return '';
-        const randomMembers = nonBots.random(2);
-        return randomMembers.map(m => `<@${m.id}>`).join(' ');
-      } else if (mentionType === 'everyone') {
+    // メンションを決める関数（ランダムメンションは削除）
+    const getMention = () => {
+      if (mentionType === 'everyone') {
         return '@everyone';
       }
       return '';
@@ -197,12 +188,20 @@ client.on(Events.InteractionCreate, async interaction => {
     // 遅延用の関数
     const delay = ms => new Promise(res => setTimeout(res, ms));
 
+    // 送信失敗フラグ
+    let hasFailed = false;
+
     // 5回送信（順番に実行される）
     for (let i = 0; i < 5; i++) {
-      const mentionText = await getMention();
+      // すでに失敗している場合はループを抜ける
+      if (hasFailed) break;
+
+      const mentionText = getMention();
+      const finalContent = mentionText ? `${text}\n${mentionText}` : text;
+
       const payload = {
-        content: `${text}\n${mentionText}`,
-        allowedMentions: { parse: ['users', 'everyone'] },
+        content: finalContent,
+        allowedMentions: mentionType === 'everyone' ? { parse: ['everyone'] } : { parse: [] },
       };
 
       try {
@@ -219,16 +218,47 @@ client.on(Events.InteractionCreate, async interaction => {
           reason = 'AutoMod によってブロックされました。';
         } else if (err.code === 50001) {
           reason = 'Bot に必要な権限がありません (Missing Access)。';
+        } else if (err.code === 50013) {
+          reason = '権限不足: メッセージを送信できません。';
+        } else if (err.message) {
+          reason = err.message;
         }
 
-        await interaction.followUp({
-          content: `⚠️ 送信できませんでした: ${reason}`,
-          flags: 64, // 実行者のみに表示
+        // ボタンを無効化
+        const disabledRow = new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId(interaction.customId)
+            .setLabel('実行')
+            .setStyle(ButtonStyle.Primary)
+            .setDisabled(true),
+        );
+
+        // 元のメッセージを更新してボタンを無効化
+        await interaction.message.edit({
+          content: interaction.message.content,
+          components: [disabledRow],
         });
+
+        // 実行者のみに警告を表示
+        await interaction.followUp({
+          content: `⚠️ **送信に失敗しました**\n理由: ${reason}\n\nボタンは無効化されました。`,
+          flags: 64, // ephemeral (実行者のみに表示)
+        });
+
+        hasFailed = true;
+        break;
       }
 
       // 間隔待機
       if (i < 4) await delay(interval);
+    }
+
+    // 成功時のメッセージ（失敗していない場合のみ）
+    if (!hasFailed) {
+      await interaction.followUp({
+        content: '✅ すべてのメッセージを送信しました。',
+        flags: 64,
+      });
     }
   }
 });
