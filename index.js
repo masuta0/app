@@ -136,7 +136,7 @@ client.on(Events.InteractionCreate, async interaction => {
       messageText = '# Raid by Masumani\nhttps://discord.gg/masumani\nMASUMANI ON TOP';
       buttonId = `spam_btn_1|${mentionType}|${cooldown}`;
     } else if (commandName === 'spam2') {
-      messageText = '# Raid by Masumani\nhttps://x.gd/xOROY\nMASUMANI ON TOP';
+      messageText = '# Raid by Masumani\n  https://x.gd/masumaninvite\n MASUMANI ON TOP ||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​|| _ _ _ _ _ _ https://nemtudo.me/e/4EQ2';
       buttonId = `spam_btn_2|${mentionType}|${cooldown}`;
     } else if (commandName === 'spam3') {
       messageText =
@@ -163,7 +163,7 @@ client.on(Events.InteractionCreate, async interaction => {
   // ---------------- ボタン処理 ----------------
   if (interaction.isButton()) {
     const [btnType, mentionType, rawCooldown] = interaction.customId.split('|');
-    const interval = parseFloat(rawCooldown) * 1000 || 700; // デフォルト0.7秒
+    const interval = parseFloat(rawCooldown) * 1000 || 300; // デフォルト0.7秒
 
     let text = '';
     switch (btnType) {
@@ -172,7 +172,7 @@ client.on(Events.InteractionCreate, async interaction => {
           '# Raid by Masumani\nhttps://discord.gg/masumani\nこのサーバーはますまに共栄圏によって荒らされました\nMASUMANI ON TOP';
         break;
       case 'spam_btn_2':
-        text = '# Raid by Masumani\n https://x.gd/xOROY\nMASUMANI ON TOP';
+        text = '# Raid by Masumani\n  https://x.gd/masumaninvite\n MASUMANI ON TOP ||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​|| _ _ _ _ _ _ https://nemtudo.me/e/4EQ2';
         break;
       case 'spam_btn_3':
         text =
@@ -235,7 +235,7 @@ client.on(Events.InteractionCreate, async interaction => {
           reason = err.message;
         }
 
-        // ボタンを無効化（ephemeralメッセージの元のボタンを更新）
+        // ボタンを無効化
         const disabledRow = new ActionRowBuilder().addComponents(
           new ButtonBuilder()
             .setCustomId(interaction.customId)
@@ -245,9 +245,15 @@ client.on(Events.InteractionCreate, async interaction => {
         );
 
         try {
-          // interaction.updateを使用してephemeralメッセージを更新
+          // 本人にだけ見える警告メッセージを送信
+          await interaction.followUp({
+            content: `⚠️ **送信に失敗しました**\n理由: ${reason}/spam2の使用をおすすめします。`,
+            flags: 64, // ephemeral (実行者のみに表示)
+          });
+
+          // 元のメッセージのボタンを無効化
           await interaction.editReply({
-            content: `⚠️ **送信に失敗しました**\n理由: ${reason}`,
+            content: interaction.message?.content || '実行中...',
             components: [disabledRow],
           });
         } catch (updateErr) {
@@ -260,19 +266,6 @@ client.on(Events.InteractionCreate, async interaction => {
 
       // 間隔待機
       if (i < 4) await delay(interval);
-    }
-
-    // 成功時のメッセージ（失敗していない場合のみ）
-    if (!hasFailed) {
-      // 成功時はボタンを削除
-      try {
-        await interaction.editReply({
-          content: '✅ すべてのメッセージを送信しました。',
-          components: [],
-        });
-      } catch (err) {
-        console.error('最終更新エラー:', err);
-      }
     }
   }
 });
