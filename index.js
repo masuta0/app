@@ -11,6 +11,17 @@ const {
 } = require('discord.js');
 require('dotenv').config();
 
+// 環境変数のチェック
+if (!process.env.TOKEN) {
+  console.error('❌ エラー: TOKEN が .env ファイルに設定されていません');
+  process.exit(1);
+}
+
+if (!process.env.CLIENT_ID) {
+  console.error('❌ エラー: CLIENT_ID が .env ファイルに設定されていません');
+  process.exit(1);
+}
+
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 // ---------------- スラッシュコマンド定義 ----------------
@@ -103,9 +114,9 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
   try {
     console.log('スラッシュコマンド登録中...');
     await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), { body: commands });
-    console.log('スラッシュコマンド登録完了！');
+    console.log('✅ スラッシュコマンド登録完了！');
   } catch (error) {
-    console.error(error);
+    console.error('❌ コマンド登録エラー:', error);
   }
 })();
 
@@ -177,7 +188,7 @@ client.on(Events.InteractionCreate, async interaction => {
     // 応答保留
     await interaction.deferReply();
 
-    // メンションを決める関数（ランダムメンションは削除）
+    // メンションを決める関数
     const getMention = () => {
       if (mentionType === 'everyone') {
         return '@everyone';
@@ -224,26 +235,24 @@ client.on(Events.InteractionCreate, async interaction => {
           reason = err.message;
         }
 
-        // ボタンを無効化
+        // ボタンを無効化（ephemeralメッセージの元のボタンを更新）
         const disabledRow = new ActionRowBuilder().addComponents(
           new ButtonBuilder()
             .setCustomId(interaction.customId)
-            .setLabel('実行')
-            .setStyle(ButtonStyle.Primary)
+            .setLabel('実行（無効）')
+            .setStyle(ButtonStyle.Secondary)
             .setDisabled(true),
         );
 
-        // 元のメッセージを更新してボタンを無効化
-        await interaction.message.edit({
-          content: interaction.message.content,
-          components: [disabledRow],
-        });
-
-        // 実行者のみに警告を表示
-        await interaction.followUp({
-          content: `⚠️ **送信に失敗しました**\n理由: ${reason}\n\nボタンは無効化されました。`,
-          flags: 64, // ephemeral (実行者のみに表示)
-        });
+        try {
+          // interaction.updateを使用してephemeralメッセージを更新
+          await interaction.editReply({
+            content: `⚠️ **送信に失敗しました**\n理由: ${reason}`,
+            components: [disabledRow],
+          });
+        } catch (updateErr) {
+          console.error('ボタン無効化エラー:', updateErr);
+        }
 
         hasFailed = true;
         break;
@@ -255,13 +264,22 @@ client.on(Events.InteractionCreate, async interaction => {
 
     // 成功時のメッセージ（失敗していない場合のみ）
     if (!hasFailed) {
-      await interaction.followUp({
-        content: '✅ すべてのメッセージを送信しました。',
-        flags: 64,
-      });
+      // 成功時はボタンを削除
+      try {
+        await interaction.editReply({
+          content: '✅ すべてのメッセージを送信しました。',
+          components: [],
+        });
+      } catch (err) {
+        console.error('最終更新エラー:', err);
+      }
     }
   }
 });
 
 // ---------------- Bot起動 ----------------
+client.on('ready', () => {
+  console.log(`✅ Bot起動完了: ${client.user.tag}`);
+});
+
 client.login(process.env.TOKEN);
