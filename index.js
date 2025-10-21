@@ -274,5 +274,19 @@ client.on(Events.InteractionCreate, async interaction => {
 client.on('ready', () => {
   console.log(`✅ Bot起動完了: ${client.user.tag}`);
 });
+// ==============================
+// 🌐 Koyeb KeepAliveサーバー
+// ==============================
+const express = require("express");
+const app = express();
+
+app.get("/", (req, res) => {
+  res.send("✅ Discord Bot is running on Koyeb!");
+});
+
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+  console.log(`🌐 KeepAliveサーバー起動中: ポート ${PORT}`);
+});
 
 client.login(process.env.TOKEN);
