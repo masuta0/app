@@ -13,12 +13,12 @@ require('dotenv').config();
 
 // 環境変数のチェック
 if (!process.env.TOKEN) {
-  console.error('❌ エラー: TOKEN が .env ファイルに設定されていません');
+  console.error('エラー: TOKEN が .env ファイルに設定されていません');
   process.exit(1);
 }
 
 if (!process.env.CLIENT_ID) {
-  console.error('❌ エラー: CLIENT_ID が .env ファイルに設定されていません');
+  console.error('エラー: CLIENT_ID が .env ファイルに設定されていません');
   process.exit(1);
 }
 
@@ -42,7 +42,7 @@ const commands = [
     .addIntegerOption(option =>
       option
         .setName('cooldown')
-        .setDescription('低速対策 (送信間隔 秒)')
+        .setDescription('送信間隔 秒')
         .setRequired(false)
         .addChoices(
           { name: '5秒', value: 5 },
@@ -55,7 +55,7 @@ const commands = [
 
   new SlashCommandBuilder()
     .setName('spam2')
-    .setDescription('招待リンク対策回避')
+    .setDescription('招待リンク回避')
     .addStringOption(option =>
       option
         .setName('mention')
@@ -69,7 +69,7 @@ const commands = [
     .addIntegerOption(option =>
       option
         .setName('cooldown')
-        .setDescription('低速対策 (送信間隔 秒)')
+        .setDescription('送信間隔 秒')
         .setRequired(false)
         .addChoices(
           { name: '5秒', value: 5 },
@@ -96,7 +96,7 @@ const commands = [
     .addIntegerOption(option =>
       option
         .setName('cooldown')
-        .setDescription('低速対策 (送信間隔 秒)')
+        .setDescription('送信間隔 秒')
         .setRequired(false)
         .addChoices(
           { name: '5秒', value: 5 },
@@ -130,22 +130,22 @@ client.on(Events.InteractionCreate, async interaction => {
 
     // オプション取得
     const mentionType = interaction.options.getString('mention') || 'none';
-    const cooldown = interaction.options.getInteger('cooldown') || 0.7; // デフォルト 0.7秒
+    const cooldown = interaction.options.getInteger('cooldown') || 0.3; // デフォルト 0.7秒
 
-    if (commandName === 'spam1') {
+    if (commandName === 'masumani1') {
       messageText = '# Raid by Masumani\nhttps://discord.gg/k248PuD2C2\nMASUMANI ON TOP';
-      buttonId = `spam_btn_1|${mentionType}|${cooldown}`;
-    } else if (commandName === 'spam2') {
+      buttonId = `masumani_btn_1|${mentionType}|${cooldown}`;
+    } else if (commandName === 'masumani2') {
       messageText = '# Raid by Masumani\n https://x.gd/masueikyu\n MASUMANI ON TOP ||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​|| _ _ _ _ _ _ https://nemtudo.me/e/4EQ2';
-      buttonId = `spam_btn_2|${mentionType}|${cooldown}`;
-    } else if (commandName === 'spam3') {
+      buttonId = `masumani_btn_2|${mentionType}|${cooldown}`;
+    } else if (commandName === 'masumani3') {
       messageText =
         '# Raid by Masumani\n' +
         '# このサーバーはますまに共栄圏によって荒らされました。\n' +
         '# [今すぐ本鯖に参加](https://discord.gg/k248PuD2C2)\n' +
         'https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/copy_7D48AD1D-7F83-4738-A7A7-0BE70C494F51.gif\n' +
         'https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif';
-      buttonId = `spam_btn_3|${mentionType}|${cooldown}`;
+      buttonId = `masumani_btn_3|${mentionType}|${cooldown}`;
     }
 
     const row = new ActionRowBuilder().addComponents(
@@ -162,18 +162,18 @@ client.on(Events.InteractionCreate, async interaction => {
   // ---------------- ボタン処理 ----------------
   if (interaction.isButton()) {
     const [btnType, mentionType, rawCooldown] = interaction.customId.split('|');
-    const interval = parseFloat(rawCooldown) * 1000 || 300; // デフォルト0.7秒
+    const interval = parseFloat(rawCooldown) * 1000 || 30; // デフォルト0.7秒
 
     let text = '';
     switch (btnType) {
-      case 'spam_btn_1':
+      case 'masumani_btn_1':
         text =
           '# Raid by Masumani\nhttps://discord.gg/k248PuD2C2\nこのサーバーはますまに共栄圏によって荒らされました\nMASUMANI ON TOP';
         break;
-      case 'spam_btn_2':
+      case 'masumani_btn_2':
         text = '# Raid by Masumani\nhttps://x.gd/masueikyu\n MASUMANI ON TOP ||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​|| _ _ _ _ _ _ https://nemtudo.me/e/4EQ2';
         break;
-      case 'spam_btn_3':
+      case 'masumani_btn_3':
         text =
           '# Raid by Masumani\n' +
           '# このサーバーはますまに共栄圏によって荒らされました。\n' +
@@ -245,7 +245,7 @@ client.on(Events.InteractionCreate, async interaction => {
         try {
           // 本人にだけ見える警告メッセージを送信
           await interaction.followUp({
-            content: `⚠️ **送信に失敗しました**\n理由: ${reason}/spam2の使用をおすすめします。`,
+            content: `⚠️ **送信に失敗しました**\n理由: ${reason}/masumani2の使用をおすすめします。`,
             flags: 64, // ephemeral (実行者のみに表示)
           });
 
