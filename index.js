@@ -27,8 +27,8 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 // ---------------- スラッシュコマンド定義 ----------------
 const commands = [
   new SlashCommandBuilder()
-    .setName('spam1')
-    .setDescription('シンプルスパム')
+    .setName('masumani1')
+    .setDescription('シンプル')
     .addStringOption(option =>
       option
         .setName('mention')
@@ -54,7 +54,7 @@ const commands = [
     ),
 
   new SlashCommandBuilder()
-    .setName('spam2')
+    .setName('masumani2')
     .setDescription('招待リンク回避')
     .addStringOption(option =>
       option
@@ -81,7 +81,7 @@ const commands = [
     ),
 
   new SlashCommandBuilder()
-    .setName('spam3')
+    .setName('masumani3')
     .setDescription('植民地,GIF付き')
     .addStringOption(option =>
       option
