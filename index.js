@@ -139,7 +139,7 @@ client.on(Events.InteractionCreate, async interaction => {
       buttonId = `masumani_btn_2|${mentionType}|${cooldown}`;
     } else if (commandName === 'masumani3') {
       messageText =
-        ''# Raid by Masumani\n' +
+        '# Raid by Masumani\n' +
           '# このサーバーはますまに共栄圏によって荒らされました。\n' +
           '# [今すぐ本鯖に参加](https://discord.gg/k248PuD2C2)\n' +
           'https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/copy_7D48AD1D-7F83-4738-A7A7-0BE70C494F51.gif\n' +
