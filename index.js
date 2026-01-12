@@ -130,8 +130,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
     // オプション取得
     const mentionType = interaction.options.getString('mention') || 'none';
-    const cooldown = interaction.options.getInteger('cooldown') || 0.3; // デフォルト 0.7秒
-
+    const cooldown = interaction.options.getInteger('cooldown') ?? 1;
     if (commandName === 'masumani1') {
       messageText = '# Raid by Masumani\nhttps://discord.gg/k248PuD2C2\nMASUMANI ON TOP';
       buttonId = `masumani_btn_1|${mentionType}|${cooldown}`;
@@ -140,11 +139,11 @@ client.on(Events.InteractionCreate, async interaction => {
       buttonId = `masumani_btn_2|${mentionType}|${cooldown}`;
     } else if (commandName === 'masumani3') {
       messageText =
-        '# Raid by Masumani\n' +
-        '# このサーバーはますまに共栄圏によって荒らされました。\n' +
-        '# [今すぐ本鯖に参加](https://discord.gg/k248PuD2C2)\n' +
-        'https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/copy_7D48AD1D-7F83-4738-A7A7-0BE70C494F51.gif\n' +
-        'https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif';
+        ''# Raid by Masumani\n' +
+          '# このサーバーはますまに共栄圏によって荒らされました。\n' +
+          '# [今すぐ本鯖に参加](https://discord.gg/k248PuD2C2)\n' +
+          'https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/copy_7D48AD1D-7F83-4738-A7A7-0BE70C494F51.gif\n' +
+          'https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif';
       buttonId = `masumani_btn_3|${mentionType}|${cooldown}`;
     }
 
@@ -155,14 +154,14 @@ client.on(Events.InteractionCreate, async interaction => {
     await interaction.reply({
       content: `実行「${commandName}」`,
       components: [row],
-      flags: 64, // ephemeral
+      ephemeral: true, 
     });
   }
 
   // ---------------- ボタン処理 ----------------
   if (interaction.isButton()) {
     const [btnType, mentionType, rawCooldown] = interaction.customId.split('|');
-    const interval = parseFloat(rawCooldown) * 1000 || 300; // デフォルト0.7秒
+    const interval = (parseFloat(rawCooldown) || 1) * 1000;
 
     let text = '';
     switch (btnType) {
@@ -176,10 +175,10 @@ client.on(Events.InteractionCreate, async interaction => {
       case 'masumani_btn_3':
         text =
           '# Raid by Masumani\n' +
-          '# このサーバーはますまに共栄圏によって荒らされました。\n' +
-          '# [今すぐ本鯖に参加](https://discord.gg/k248PuD2C2)\n' +
-          'https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/copy_7D48AD1D-7F83-4738-A7A7-0BE70C494F51.gif\n' +
-          'https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif';
+            '# このサーバーはますまに共栄圏によって荒らされました。\n' +
+            '# [今すぐ本鯖に参加](https://discord.gg/k248PuD2C2)\n' +
+            'https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/copy_7D48AD1D-7F83-4738-A7A7-0BE70C494F51.gif\n' +
+            'https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif';
         break;
     }
 
@@ -246,7 +245,7 @@ client.on(Events.InteractionCreate, async interaction => {
           // 本人にだけ見える警告メッセージを送信
           await interaction.followUp({
             content: `⚠️ **送信に失敗しました**\n理由: ${reason}/masumani2の使用をおすすめします。`,
-            flags: 64, // ephemeral (実行者のみに表示)
+            ephemeral: true, 
           });
 
           // 元のメッセージのボタンを無効化
