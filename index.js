@@ -162,7 +162,7 @@ client.on(Events.InteractionCreate, async interaction => {
   // ---------------- ボタン処理 ----------------
   if (interaction.isButton()) {
     const [btnType, mentionType, rawCooldown] = interaction.customId.split('|');
-    const interval = parseFloat(rawCooldown) * 1000 || 30; // デフォルト0.7秒
+    const interval = parseFloat(rawCooldown) * 1000 || 300; // デフォルト0.7秒
 
     let text = '';
     switch (btnType) {
