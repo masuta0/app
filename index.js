@@ -24,88 +24,39 @@ if (!process.env.CLIENT_ID) {
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-// ---------------- スラッシュコマンド定義 ----------------
+// 共通オプション定義関数
+const addCommonOptions = (command) => {
+  return command
+    .addStringOption(option =>
+      option
+        .setName('mention')
+        .setDescription('メンション設定')
+        .setRequired(false)
+        .addChoices(
+          { name: 'なし', value: 'none' },
+          { name: '@everyone', value: 'everyone' },
+        ),
+    )
+    .addIntegerOption(option =>
+      option
+        .setName('cooldown')
+        .setDescription('送信間隔 秒')
+        .setRequired(false)
+        .addChoices(
+          { name: '5秒', value: 5 },
+          { name: '10秒', value: 10 },
+          { name: '15秒', value: 15 },
+          { name: '30秒', value: 30 },
+          { name: '60秒', value: 60 },
+        ),
+    );
+};
+
+// スラッシュコマンド定義
 const commands = [
-  new SlashCommandBuilder()
-    .setName('masumani1')
-    .setDescription('シンプル')
-    .addStringOption(option =>
-      option
-        .setName('mention')
-        .setDescription('メンション設定')
-        .setRequired(false)
-        .addChoices(
-          { name: 'なし', value: 'none' },
-          { name: '@everyone', value: 'everyone' },
-        ),
-    )
-    .addIntegerOption(option =>
-      option
-        .setName('cooldown')
-        .setDescription('送信間隔 秒')
-        .setRequired(false)
-        .addChoices(
-          { name: '5秒', value: 5 },
-          { name: '10秒', value: 10 },
-          { name: '15秒', value: 15 },
-          { name: '30秒', value: 30 },
-          { name: '60秒', value: 60 },
-        ),
-    ),
-
-  new SlashCommandBuilder()
-    .setName('masumani2')
-    .setDescription('招待リンク回避')
-    .addStringOption(option =>
-      option
-        .setName('mention')
-        .setDescription('メンション設定')
-        .setRequired(false)
-        .addChoices(
-          { name: 'なし', value: 'none' },
-          { name: '@everyone', value: 'everyone' },
-        ),
-    )
-    .addIntegerOption(option =>
-      option
-        .setName('cooldown')
-        .setDescription('送信間隔 秒')
-        .setRequired(false)
-        .addChoices(
-          { name: '5秒', value: 5 },
-          { name: '10秒', value: 10 },
-          { name: '15秒', value: 15 },
-          { name: '30秒', value: 30 },
-          { name: '60秒', value: 60 },
-        ),
-    ),
-
-  new SlashCommandBuilder()
-    .setName('masumani3')
-    .setDescription('植民地,GIF付き')
-    .addStringOption(option =>
-      option
-        .setName('mention')
-        .setDescription('メンション設定')
-        .setRequired(false)
-        .addChoices(
-          { name: 'なし', value: 'none' },
-          { name: '@everyone', value: 'everyone' },
-        ),
-    )
-    .addIntegerOption(option =>
-      option
-        .setName('cooldown')
-        .setDescription('送信間隔 秒')
-        .setRequired(false)
-        .addChoices(
-          { name: '5秒', value: 5 },
-          { name: '10秒', value: 10 },
-          { name: '15秒', value: 15 },
-          { name: '30秒', value: 30 },
-          { name: '60秒', value: 60 },
-        ),
-    ),
+  addCommonOptions(new SlashCommandBuilder().setName('masumani1').setDescription('シンプル')),
+  addCommonOptions(new SlashCommandBuilder().setName('masumani2').setDescription('招待リンク回避')),
+  addCommonOptions(new SlashCommandBuilder().setName('masumani3').setDescription('植民地,GIF付き')),
 ].map(command => command.toJSON());
 
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
@@ -120,32 +71,24 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
   }
 })();
 
-// ---------------- コマンドとボタン処理 ----------------
+// メッセージテキストマップ
+const messageTexts = {
+  masumani1: '# Raid by Masumani\nhttps://discord.gg/k248PuD2C2\nMASUMANI ON TOP',
+  masumani2: '# Raid by Masumani\n https://x.gd/masueikyu\n MASUMANI ON TOP |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| _ _ _ _ _ _ https://nemtudo.me/e/4EQ2',
+  masumani3: '# Raid by Masumani\n' +
+    '# このサーバーはますまに共栄圏によって荒らされました。\n' +
+    '# [今すぐ本鯖に参加](https://discord.gg/k248PuD2C2)\n' +
+    'https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/copy_7D48AD1D-7F83-4738-A7A7-0BE70C494F51.gif\n' +
+    'https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif',
+};
+
+// コマンド/ボタン処理
 client.on(Events.InteractionCreate, async interaction => {
   if (interaction.isChatInputCommand()) {
     const { commandName } = interaction;
-
-    let messageText = '';
-    let buttonId = '';
-
-    // オプション取得
     const mentionType = interaction.options.getString('mention') || 'none';
-    const cooldown = interaction.options.getInteger('cooldown') ?? 1;
-    if (commandName === 'masumani1') {
-      messageText = '# Raid by Masumani\nhttps://discord.gg/k248PuD2C2\nMASUMANI ON TOP';
-      buttonId = `masumani_btn_1|${mentionType}|${cooldown}`;
-    } else if (commandName === 'masumani2') {
-      messageText = '# Raid by Masumani\n https://x.gd/masueikyu\n MASUMANI ON TOP ||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​|| _ _ _ _ _ _ https://nemtudo.me/e/4EQ2';
-      buttonId = `masumani_btn_2|${mentionType}|${cooldown}`;
-    } else if (commandName === 'masumani3') {
-      messageText =
-        '# Raid by Masumani\n' +
-          '# このサーバーはますまに共栄圏によって荒らされました。\n' +
-          '# [今すぐ本鯖に参加](https://discord.gg/k248PuD2C2)\n' +
-          'https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/copy_7D48AD1D-7F83-4738-A7A7-0BE70C494F51.gif\n' +
-          'https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif';
-      buttonId = `masumani_btn_3|${mentionType}|${cooldown}`;
-    }
+    const cooldown = interaction.options.getInteger('cooldown') || 1;
+    const buttonId = `masumani_btn_${commandName.slice(-1)}|${mentionType}|${cooldown}`;
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder().setCustomId(buttonId).setLabel('実行').setStyle(ButtonStyle.Primary),
@@ -154,54 +97,22 @@ client.on(Events.InteractionCreate, async interaction => {
     await interaction.reply({
       content: `実行「${commandName}」`,
       components: [row],
-      ephemeral: true, 
+      ephemeral: true,
     });
-  }
-
-  // ---------------- ボタン処理 ----------------
-  if (interaction.isButton()) {
+  } else if (interaction.isButton()) {
     const [btnType, mentionType, rawCooldown] = interaction.customId.split('|');
-    const interval = (parseFloat(rawCooldown) || 1) * 1000;
+    const interval = (parseInt(rawCooldown, 10) || 1) * 1000;
+    const commandKey = `masumani${btnType.slice(-1)}`;
+    const text = messageTexts[commandKey];
 
-    let text = '';
-    switch (btnType) {
-      case 'masumani_btn_1':
-        text =
-          '# Raid by Masumani\nhttps://discord.gg/k248PuD2C2\nこのサーバーはますまに共栄圏によって荒らされました\nMASUMANI ON TOP';
-        break;
-      case 'masumani_btn_2':
-        text = '# Raid by Masumani\nhttps://x.gd/masueikyu\n MASUMANI ON TOP ||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​|| _ _ _ _ _ _ https://nemtudo.me/e/4EQ2';
-        break;
-      case 'masumani_btn_3':
-        text =
-          '# Raid by Masumani\n' +
-            '# このサーバーはますまに共栄圏によって荒らされました。\n' +
-            '# [今すぐ本鯖に参加](https://discord.gg/k248PuD2C2)\n' +
-            'https://cdn.discordapp.com/attachments/1236663988914229308/1287064050647306240/copy_7D48AD1D-7F83-4738-A7A7-0BE70C494F51.gif\n' +
-            'https://cdn.discordapp.com/attachments/1236663988914229308/1287064282256900246/copy_89BE23AC-0647-468A-A5B9-504B5A98BC8B.gif';
-        break;
-    }
+    await interaction.deferReply({ ephemeral: false });
 
-    // 応答保留
-    await interaction.deferReply();
-
-    // メンションを決める関数
-    const getMention = () => {
-      if (mentionType === 'everyone') {
-        return '@everyone';
-      }
-      return '';
-    };
-
-    // 遅延用の関数
+    const getMention = () => mentionType === 'everyone' ? '@everyone' : '';
     const delay = ms => new Promise(res => setTimeout(res, ms));
 
-    // 送信失敗フラグ
     let hasFailed = false;
 
-    // 5回送信（順番に実行される）
     for (let i = 0; i < 5; i++) {
-      // すでに失敗している場合はループを抜ける
       if (hasFailed) break;
 
       const mentionText = getMention();
@@ -209,7 +120,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
       const payload = {
         content: finalContent,
-        allowedMentions: mentionType === 'everyone' ? { parse: ['everyone'] } : { parse: [] },
+        allowedMentions: { parse: mentionType === 'everyone' ? ['everyone'] : [] },
       };
 
       try {
@@ -222,17 +133,11 @@ client.on(Events.InteractionCreate, async interaction => {
         console.error('送信エラー:', err);
 
         let reason = '不明なエラー';
-        if (err.code === 200000) {
-          reason = 'AutoMod によってブロックされました。';
-        } else if (err.code === 50001) {
-          reason = 'Bot に必要な権限がありません (Missing Access)。';
-        } else if (err.code === 50013) {
-          reason = '権限不足: メッセージを送信できません。';
-        } else if (err.message) {
-          reason = err.message;
-        }
+        if (err.code === 200000) reason = 'AutoMod によってブロックされました。';
+        if (err.code === 50001) reason = 'Bot に必要な権限がありません (Missing Access)。';
+        if (err.code === 50013) reason = '権限不足: メッセージを送信できません。';
+        if (err.code === 429) reason = 'レートリミット: 再試行中...';
 
-        // ボタンを無効化
         const disabledRow = new ActionRowBuilder().addComponents(
           new ButtonBuilder()
             .setCustomId(interaction.customId)
@@ -242,13 +147,10 @@ client.on(Events.InteractionCreate, async interaction => {
         );
 
         try {
-          // 本人にだけ見える警告メッセージを送信
           await interaction.followUp({
-            content: `⚠️ **送信に失敗しました**\n理由: ${reason}/masumani2の使用をおすすめします。`,
-            ephemeral: true, 
+            content: `⚠️ **送信に失敗しました**\n理由: ${reason}\n/masumani2の使用をおすすめします。`,
+            ephemeral: true,
           });
-
-          // 元のメッセージのボタンを無効化
           await interaction.editReply({
             content: interaction.message?.content || '実行中...',
             components: [disabledRow],
@@ -261,19 +163,17 @@ client.on(Events.InteractionCreate, async interaction => {
         break;
       }
 
-      // 間隔待機
       if (i < 4) await delay(interval);
     }
   }
 });
 
-// ---------------- Bot起動 ----------------
+// Bot起動
 client.on('ready', () => {
   console.log(`✅ Bot起動完了: ${client.user.tag}`);
 });
-// ==============================
-// 🌐 Koyeb KeepAliveサーバー
-// ==============================
+
+// Koyeb KeepAliveサーバー
 const express = require("express");
 const app = express();
 
